@@ -1,17 +1,27 @@
 package com.springdemo.mvc.models;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Entity
 @Table(name = "instructor")
 public class Instructor {
 
     // One-to-one mapping with instructor_detail table
-//    @OneToOne(cascade = {CascadeType.DETACH, CascadeType.PERSIST})
-    @OneToOne(mappedBy = "instructor1", cascade = CascadeType.ALL)
-    @PrimaryKeyJoinColumn
-    private InstructorDetail instructorDetail;
+    // @OneToOne(cascade = {CascadeType.DETACH, CascadeType.PERSIST})
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "instructor_detail_id")
+    private InstructorDetail instructorDetailProperty;
+
+    // @OneToMany default -> fetch = FetchType.LAZY
+    // Do not apply cascading delete
+    // The best practice is to make use of Lazy loading
+    @OneToMany(fetch = FetchType.LAZY,
+               mappedBy = "instructorProperty",
+               cascade = {CascadeType.DETACH, CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE})
+    private List<Course> courses;
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY) // for auto increment id
     private Integer id;
 
     @Column(name = "first_name")
@@ -64,18 +74,25 @@ public class Instructor {
         this.email = email;
     }
 
-    public Instructor(String firstName, String lastName, String email, InstructorDetail instructorDetail) {
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.email = email;
-        this.instructorDetail = instructorDetail;
+    public InstructorDetail getInstructorDetailProperty() {
+        return instructorDetailProperty;
     }
 
-    public InstructorDetail getInstructorDetail() {
-        return instructorDetail;
+    public void setInstructorDetailProperty(InstructorDetail instructorDetail) {
+        this.instructorDetailProperty = instructorDetail;
     }
 
-    public void setInstructorDetail(InstructorDetail instructorDetail) {
-        this.instructorDetail = instructorDetail;
+    public List<Course> getCourses() {
+        return courses;
+    }
+
+    public void setCourses(List<Course> courses) {
+        this.courses = courses;
+    }
+
+    // Add convenient methods for Bi-directional
+    public void addCourse(Course course) {
+        course.setInstructorProperty(this);
+        courses.add(course);
     }
 }

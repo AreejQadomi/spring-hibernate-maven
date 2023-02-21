@@ -6,12 +6,13 @@ import javax.persistence.*;
 @Table(name = "instructor_detail")
 public class InstructorDetail {
 
-    @OneToOne(cascade = CascadeType.ALL)
-    @MapsId
-    @JoinColumn(name = "instructor_id")
-    private Instructor instructor1;
-
+    @OneToOne(mappedBy = "instructorDetailProperty", cascade = {CascadeType.DETACH, CascadeType.PERSIST, CascadeType.REFRESH})
+    // * Look at the instructorDetailProperty in the Instructor class
+    // * Use the info. from the Instructor class @JoinColumn
+    // * Find the associated instructor
+    private Instructor instructorProperty;
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "instructor_id")
     private int instructorId;
 
@@ -53,11 +54,11 @@ public class InstructorDetail {
         this.hobby = hobby;
     }
 
-    public Instructor getInstructor1() {
-        return instructor1;
+    public Instructor getInstructorProperty() {
+        return instructorProperty;
     }
 
-    public void setInstructor1(Instructor instructor1) {
-        this.instructor1 = instructor1;
+    public void setInstructorProperty(Instructor instructor1) {
+        this.instructorProperty = instructor1;
     }
 }
